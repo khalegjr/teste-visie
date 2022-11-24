@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import abort
+from flask import abort, make_response
 
 
 def get_timestamp():
@@ -84,6 +84,19 @@ def update(cpf, person):
             "data_admissao", PEOPLE[cpf]["data_admissao"])
         PEOPLE[cpf]["funcao"] = person.get("funcao", PEOPLE[cpf]["funcao"])
         return PEOPLE[cpf]
+    else:
+        abort(
+            404,
+            f"Person with cpf number {cpf} not found"
+        )
+
+
+def delete(cpf):
+    if cpf in PEOPLE:
+        del PEOPLE[cpf]
+        return make_response(
+            f"{cpf} successfully deleted", 200
+        )
     else:
         abort(
             404,
