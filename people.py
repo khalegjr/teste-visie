@@ -71,3 +71,21 @@ def read_one(cpf):
         abort(
             404, f"Person with cpf number {cpf} not found"
         )
+
+
+def update(cpf, person):
+    if cpf in PEOPLE:
+        PEOPLE[cpf]["nome"] = person.get("nome", PEOPLE[cpf]["nome"])
+        PEOPLE[cpf]["rg"] = person.get("rg", PEOPLE[cpf]["rg"])
+        PEOPLE[cpf]["cpf"] = person.get("cpf", PEOPLE[cpf]["cpf"])
+        PEOPLE[cpf]["data_nascimento"] = person.get(
+            "data_nascimento", PEOPLE[cpf]["data_nascimento"])
+        PEOPLE[cpf]["data_admissao"] = person.get(
+            "data_admissao", PEOPLE[cpf]["data_admissao"])
+        PEOPLE[cpf]["funcao"] = person.get("funcao", PEOPLE[cpf]["funcao"])
+        return PEOPLE[cpf]
+    else:
+        abort(
+            404,
+            f"Person with cpf number {cpf} not found"
+        )
