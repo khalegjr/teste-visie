@@ -1,3 +1,5 @@
+import os
+
 import connexion
 from flask import render_template
 from flask_cors import CORS
@@ -13,4 +15,5 @@ def home():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host=os.getenv("HOST"), port=os.getenv(
+        "PORT"), debug=os.getenv("DEBUG"))
