@@ -62,3 +62,12 @@ def create(person):
             406,
             f"Person with cpf number {cpf} already exists",
         )
+
+
+def read_one(cpf):
+    if cpf in PEOPLE:
+        return PEOPLE[cpf]
+    else:
+        abort(
+            404, f"Person with cpf number {cpf} not found"
+        )
