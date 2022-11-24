@@ -1,8 +1,10 @@
 from datetime import datetime
 
+from flask import abort
+
 
 def get_timestamp():
-    return datetime.now().strftime(("%Y-%m-%d %H:%M:%S"))
+    return datetime.now().strftime(("%Y-%m-%d"))
 
 
 PEOPLE = {
@@ -35,3 +37,28 @@ PEOPLE = {
 
 def read_all():
     return list(PEOPLE.values())
+
+
+def create(person):
+    nome = person.get("nome")
+    rg = person.get("rg")
+    cpf = person.get("cpf")
+    data_nascimento = person.get("data_nascimento")
+    data_admissao = person.get("data_admissao")
+    funcao = person.get("funcao", "")
+
+    if cpf and cpf not in PEOPLE:
+        PEOPLE[cpf] = {
+            "nome": nome,
+            "rg": rg,
+            "cpf": cpf,
+            "data_nascmimento": data_nascimento,
+            "data_admissao": data_admissao,
+            "função": funcao,
+        }
+        return PEOPLE[cpf], 201
+    else:
+        abort(
+            406,
+            f"Person with cpf number {cpf} already exists",
+        )
