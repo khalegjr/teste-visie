@@ -28,11 +28,13 @@ components:
           type: "string"
         data_admissao:
           type: "string"
+        funcao:
+          type: "string"
 
   parameters:
-    cpf:
-      name: "cpf"
-      description: "CPF number of the person to get"
+    id_pessoa:
+      name: "id_pessoa"
+      description: "ID number of the person to get"
       in: path
       required: True
       schema:
@@ -66,14 +68,14 @@ paths:
         "201":
           description: "Successfully created person"
 
-  /people/{cpf}:
+  /people/{id_pessoa}:
     get:
       operationId: "people.read_one"
       tags:
         - People
       summary: "Read one person"
       parameters:
-        - $ref: "#/components/parameters/cpf"
+        - $ref: "#/components/parameters/id_pessoa"
       responses:
         "200":
           description: "Successfully read person"
@@ -84,7 +86,7 @@ paths:
       operationId: "people.update"
       summary: "Update a person"
       parameters:
-        - $ref: "#/components/parameters/cpf"
+        - $ref: "#/components/parameters/id_pessoa"
       responses:
         "200":
           description: "Successfully updated person"
@@ -101,7 +103,7 @@ paths:
       operationId: "people.delete"
       summary: "Delete a person"
       parameters:
-        - $ref: "#/components/parameters/cpf"
+        - $ref: "#/components/parameters/id_pessoa"
       responses:
         "204":
           description: "Successfully deleted person"

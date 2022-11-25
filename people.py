@@ -1,62 +1,24 @@
-from datetime import datetime
-
 from flask import abort, make_response
 
-
-def get_timestamp():
-    return datetime.now().strftime(("%Y-%m-%d"))
-
-
-PEOPLE = {
-    "168.637.122-53": {
-        "nome": "Alberto Vieira",
-        "rg": "25.507.105-2",
-        "cpf": "168.637.122-53",
-        "data_nascmimento": "1997-07-01",
-        "data_admissao": get_timestamp(),
-        "função": "",
-    },
-    "877.733.889-89": {
-        "nome": "Alexandre Teixeira",
-        "rg": "79.474.888-8",
-        "cpf": "877.733.889-89",
-        "data_nascmimento": "1982-08-16",
-        "data_admissao": get_timestamp(),
-        "função": "",
-    },
-    "766.370.920-96": {
-        "nome": "Ana Carolina Souza",
-        "rg": "52.565.667-8",
-        "cpf": "766.370.920-96",
-        "data_nascmimento": "1982-03-19",
-        "data_admissao": get_timestamp(),
-        "função": "",
-    },
-}
+from config import db
+from models import Person, people_schema, person_schema
 
 
 def read_all():
-    return list(PEOPLE.values())
+    people = Person.query.all()
+    return people_schema.dump(people)
 
 
 def create(person):
-    nome = person.get("nome")
-    rg = person.get("rg")
     cpf = person.get("cpf")
-    data_nascimento = person.get("data_nascimento")
-    data_admissao = person.get("data_admissao")
-    funcao = person.get("funcao", "")
 
-    if cpf and cpf not in PEOPLE:
-        PEOPLE[cpf] = {
-            "nome": nome,
-            "rg": rg,
-            "cpf": cpf,
-            "data_nascmimento": data_nascimento,
-            "data_admissao": data_admissao,
-            "função": funcao,
-        }
-        return PEOPLE[cpf], 201
+    existing_person = Person.query.filter(Person.cpf == cpf).one_or_none()
+
+    if existing_person is None:
+        new_person = person_schema.load(person, session=db.session)
+        db.session.add(new_person)
+        db.session.commit()
+        return person_schema.dump(new_person), 201
     else:
         abort(
             406,
@@ -64,41 +26,48 @@ def create(person):
         )
 
 
-def read_one(cpf):
-    if cpf in PEOPLE:
-        return PEOPLE[cpf]
+def read_one(id):
+    person = Person.query.filter(Person.id_pessoa == id).one_or_none()
+
+    if person is not None:
+        return person_schema.dump(person)
     else:
         abort(
-            404, f"Person with cpf number {cpf} not found"
+            404, f"Person with id number {id} not found"
         )
 
 
-def update(cpf, person):
-    if cpf in PEOPLE:
-        PEOPLE[cpf]["nome"] = person.get("nome", PEOPLE[cpf]["nome"])
-        PEOPLE[cpf]["rg"] = person.get("rg", PEOPLE[cpf]["rg"])
-        PEOPLE[cpf]["cpf"] = person.get("cpf", PEOPLE[cpf]["cpf"])
-        PEOPLE[cpf]["data_nascimento"] = person.get(
-            "data_nascimento", PEOPLE[cpf]["data_nascimento"])
-        PEOPLE[cpf]["data_admissao"] = person.get(
-            "data_admissao", PEOPLE[cpf]["data_admissao"])
-        PEOPLE[cpf]["funcao"] = person.get("funcao", PEOPLE[cpf]["funcao"])
-        return PEOPLE[cpf]
-    else:
-        abort(
-            404,
-            f"Person with cpf number {cpf} not found"
-        )
+def update(id, person):
+    existing_person = Person.query.filter(Person.id_pessoa == id).one_or_none()
 
+    if existing_person:
+        update_person = person_schema.load(person, session=db.session)
+        existing_person.nome = update_person.nome
+        existing_person.rg = update_person.rg
+        existing_person.cpf = update_person.cpf
+        existing_person.data_nascimento = update_person.data_nascimento
+        existing_person.data_admissao = update_person.data_admissao
+        existing_person.funcao = update_person.funcao
 
-def delete(cpf):
-    if cpf in PEOPLE:
-        del PEOPLE[cpf]
-        return make_response(
-            f"{cpf} successfully deleted", 200
-        )
+        db.session.merge(existing_person)
+        db.session.commit()
+        return person_schema.dump(existing_person), 201
     else:
         abort(
             404,
-            f"Person with cpf number {cpf} not found"
+            f"Person with ID number {id} not found"
+        )
+
+
+def delete(id):
+    existing_person = Person.query.filter(Person.id_pessoa == id).one_or_none()
+
+    if existing_person:
+        db.session.delete(existing_person)
+        db.session.commit()
+        return make_response(f"{id} successfully deleted", 200)
+    else:
+        abort(
+            404,
+            f"Person with cpf number {id} not found"
         )
