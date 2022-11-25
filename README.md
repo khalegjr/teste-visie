@@ -1,5 +1,26 @@
 # teste-visie
 
+Projeto desenvolvido com Flask e Flask-SQLAlchemy e conexão com MySQL.
+
+Para instalar, após clonar esse repositório, crie um ambiente virtual e instale as depenências.
+```bash
+cd teste-visie
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+Após instalar duplique e renomeie o arquivo `.env.example` para `.env` e defina as variáveis de ambiente conforme a necessidade, principalmente a `DB_URI`.
+
+Para executar o projeto basta `python app.py`.
+
+Para visualizar a documentação da API basta acessar a url `/api/ui`.
+```bash
+http://localhost:5000/api/ui/
+```
+
+Ainda não fiz o frontend para acesso da API
+
+## Descrição do teste
 A entrega deve ser feita através do Github.
 A linguagem utilizada para resolução fica a critério do candidato. Há a óbvia preferência pela biblioteca mais compatível com a vaga (estes testes terão peso maior no processo seletivo).
 Ao finalizar, por favor, complete este formulário.
